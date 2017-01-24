@@ -4,9 +4,9 @@ var token = process.env.SLACK_TOKEN
 
 var controller = Botkit.slackbot({
   // reconnect to Slack RTM when connection goes bad
-  // retry: Infinity,
-  // debug: false,
-  interactive_replies: true
+  retry: Infinity,
+  debug: false,
+  // interactive_replies: true
 });
 
 // Assume single team mode if we have a SLACK_TOKEN
@@ -120,6 +120,10 @@ controller.on('direct_message', function(bot, message) {
         ]);
     });
 });
+
+controller.on('interactive_message_callback', function(bot, message) {
+    bot.reply(message, "Ok got it");
+})
 
 var askTriggerConfirm = function(convo, responses) {
     convo.say('Hi! I noticed you said ' + trigger_phrase);
