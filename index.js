@@ -236,6 +236,7 @@ var askOccasion = function(convo, responses) {
             callback: function(response, convo) {
                 responses["occasion_key"] = "birthday"
                 responses["occasion"] = "Birthday"
+                console.log(responses);
                 askPoints(convo, responses);
                 convo.next();
             }
