@@ -5,7 +5,7 @@ var token = process.env.SLACK_TOKEN
 var controller = Botkit.slackbot({
   // reconnect to Slack RTM when connection goes bad
   retry: Infinity,
-  debug: true,
+  debug: false,
   interactive_replies: true
 });
 
@@ -62,15 +62,62 @@ controller.hears(default_occasions_regexp, ['ambient'], function(bot, message) {
 });
 
 controller.on('direct_message', function(bot, message) {
+    // bot.startConversation(message, function(err, convo) {
+    //     if(!err) {
+    //         point_limit = 500;
+    //         responses = { 'editing': false };
+    //         askRecevier(convo, responses);
+    //         convo.next();
+    //     } else {
+    //         console.log('ERROR: ', err);
+    //     }
+    // });
     bot.startConversation(message, function(err, convo) {
-        if(!err) {
-            point_limit = 500;
-            responses = { 'editing': false };
-            askRecevier(convo, responses);
-            convo.next();
-        } else {
-            console.log('ERROR: ', err);
-        }
+        convo.ask({
+            attachments:[
+                {
+                    title: 'Do you want to proceed?',
+                    callback_id: '123',
+                    attachment_type: 'default',
+                    actions: [
+                        {
+                            "name":"yes",
+                            "text": "Yes",
+                            "value": "yes",
+                            "type": "button",
+                        },
+                        {
+                            "name":"no",
+                            "text": "No",
+                            "value": "no",
+                            "type": "button",
+                        }
+                    ]
+                }
+            ]
+        },[
+            {
+                pattern: "yes",
+                callback: function(reply, convo) {
+                    convo.say('FABULOUS!');
+                    convo.next();
+                    // do something awesome here.
+                }
+            },
+            {
+                pattern: "no",
+                callback: function(reply, convo) {
+                    convo.say('Too bad');
+                    convo.next();
+                }
+            },
+            {
+                default: true,
+                callback: function(reply, convo) {
+                    // do nothing
+                }
+            }
+        ]);
     });
 });
 
@@ -162,165 +209,121 @@ var askCancelConfirm = function(convo, responses) {
 }
 
 var askRecevier = function(convo, responses) {
-    // convo.ask('Hi Tong! Who would you like to recognize today?', [
-    //     {
-    //         pattern: '@someone',
-    //         callback: function(response, convo) {
-    //             responses['receiver'] = response.text;
-    //             askOccasion(convo, responses);
-    //             convo.next();
-    //         }
-    //     },
-    //     {
-    //         default: true,
-    //         callback: function(response, convo) {
-    //             convo.repeat();
-    //         }
-    //     }
-    // ], {'key': 'recv'});
-    convo.ask({
-        attachments:[
-            {
-                title: 'Do you want to proceed?',
-                callback_id: '123',
-                attachment_type: 'default',
-                actions: [
-                    {
-                        "name":"yes",
-                        "text": "Yes",
-                        "value": "yes",
-                        "type": "button",
-                    },
-                    {
-                        "name":"no",
-                        "text": "No",
-                        "value": "no",
-                        "type": "button",
-                    }
-                ]
-            }
-        ]
-    },[
+    convo.ask('Hi Tong! Who would you like to recognize today?', [
         {
-            pattern: "yes",
-            callback: function(reply, convo) {
-                convo.say('FABULOUS!');
-                convo.next();
-                // do something awesome here.
-            }
-        },
-        {
-            pattern: "no",
-            callback: function(reply, convo) {
-                convo.say('Too bad');
+            pattern: '@someone',
+            callback: function(response, convo) {
+                responses['receiver'] = response.text;
+                askOccasion(convo, responses);
                 convo.next();
             }
         },
         {
             default: true,
-            callback: function(reply, convo) {
-                // do nothing
+            callback: function(response, convo) {
+                convo.repeat();
             }
         }
-    ]);
+    ], {'key': 'recv'});
 }
 
 var askOccasion = function(convo, responses) {
-    // convo.ask({
-    //     attachments: [
-    //         {
-    //             title: 'Excellent! What is the occasion?',
-    //             callback_id: 'occasion',
-    //             attachment_type: 'default',
-    //             actions: [
-    //                 {
-    //                     "name": "great_job",
-    //                     "text": "Great Job",
-    //                     "value": "great_job",
-    //                     "type": "button",
-    //                 },
-    //                 {
-    //                     "name": "birthday",
-    //                     "text": "Birthday",
-    //                     "value": "birthday",
-    //                     "type": "button",
-    //                 },
-    //                 {
-    //                     "name": "workiversary",
-    //                     "text": "Workiversary",
-    //                     "value": "workiversary",
-    //                     "type": "button",
-    //                 },
-    //                 {
-    //                     "name": "congratulations",
-    //                     "text": "Congratulations",
-    //                     "value": "congratulations",
-    //                     "type": "button",
-    //                 },
-    //                 {
-    //                     "name": "thank_you",
-    //                     "text": "Thank You",
-    //                     "value": "thank_you",
-    //                     "type": "button",
-    //                 }
-    //             ]
-    //         }
-    //     ]
-    // },
-    // [
-    //     {
-    //         pattern: 'great_job',
-    //         callback: function(response, convo) {
-    //             responses["occasion_key"] = "great_job"
-    //             responses["occasion"] = "Great Job"
-    //             askPoints(convo, responses);
-    //             convo.next();
-    //         }
-    //     },
-    //     {
-    //         pattern: 'birthday',
-    //         callback: function(response, convo) {
-    //             console.log('it triggered');
-    //             responses["occasion_key"] = "birthday"
-    //             responses["occasion"] = "Birthday"
-    //             askPoints(convo, responses);
-    //             convo.next();
-    //         }
-    //     },
-    //     {
-    //         pattern: 'workiversary',
-    //         callback: function(response, convo) {
-    //             responses["occasion_key"] = "workiversary"
-    //             responses["occasion"] = "Workiversary"
-    //             askPoints(convo, responses);
-    //             convo.next();
-    //         }
-    //     },
-    //     {
-    //         pattern: 'congratulations',
-    //         callback: function(response, convo) {
-    //             responses["occasion_key"] = "congratulations"
-    //             responses["occasion"] = "Congratulations"
-    //             askPoints(convo, responses);
-    //             convo.next();
-    //         }
-    //     },
-    //     {
-    //         pattern: 'thank_you',
-    //         callback: function(response, convo) {
-    //             responses["occasion_key"] = "thank_you"
-    //             responses["occasion"] = "Thank You"
-    //             askPoints(convo, responses);
-    //             convo.next();
-    //         }
-    //     },
-    // ], {"key": "occasion"});
+    convo.ask({
+        attachments: [
+            {
+                title: 'Excellent! What is the occasion?',
+                callback_id: 'occasion',
+                attachment_type: 'default',
+                actions: [
+                    {
+                        "name": "great_job",
+                        "text": "Great Job",
+                        "value": "great_job",
+                        "type": "button",
+                    },
+                    {
+                        "name": "birthday",
+                        "text": "Birthday",
+                        "value": "birthday",
+                        "type": "button",
+                    },
+                    {
+                        "name": "workiversary",
+                        "text": "Workiversary",
+                        "value": "workiversary",
+                        "type": "button",
+                    },
+                    {
+                        "name": "congratulations",
+                        "text": "Congratulations",
+                        "value": "congratulations",
+                        "type": "button",
+                    },
+                    {
+                        "name": "thank_you",
+                        "text": "Thank You",
+                        "value": "thank_you",
+                        "type": "button",
+                    }
+                ]
+            }
+        ]
+    },
+    [
+        {
+            pattern: 'great_job',
+            callback: function(response, convo) {
+                responses["occasion_key"] = "great_job"
+                responses["occasion"] = "Great Job"
+                askPoints(convo, responses);
+                convo.next();
+            }
+        },
+        {
+            pattern: 'birthday',
+            callback: function(response, convo) {
+                console.log('it triggered');
+                responses["occasion_key"] = "birthday"
+                responses["occasion"] = "Birthday"
+                askPoints(convo, responses);
+                convo.next();
+            }
+        },
+        {
+            pattern: 'workiversary',
+            callback: function(response, convo) {
+                responses["occasion_key"] = "workiversary"
+                responses["occasion"] = "Workiversary"
+                askPoints(convo, responses);
+                convo.next();
+            }
+        },
+        {
+            pattern: 'congratulations',
+            callback: function(response, convo) {
+                responses["occasion_key"] = "congratulations"
+                responses["occasion"] = "Congratulations"
+                askPoints(convo, responses);
+                convo.next();
+            }
+        },
+        {
+            pattern: 'thank_you',
+            callback: function(response, convo) {
+                responses["occasion_key"] = "thank_you"
+                responses["occasion"] = "Thank You"
+                askPoints(convo, responses);
+                convo.next();
+            }
+        },
+    ], {"key": "occasion"});
     convo.ask({
         attachments:[
             {
                 title: 'Do you want to proceed?',
                 callback_id: '123',
                 attachment_type: 'default',
+                replace_original: false,
                 actions: [
                     {
                         "name":"yes",
