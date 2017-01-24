@@ -36,7 +36,7 @@ controller.on('bot_channel_join', function (bot, message) {
 // });
 
 controller.hears('interactive', 'direct_message', function(bot, message) {
-
+    bot.say("What the fuck");
     bot.reply(message, {
         attachments:[
             {
