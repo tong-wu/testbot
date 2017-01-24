@@ -228,6 +228,7 @@ var askOccasion = function(convo, responses) {
                 responses["occasion_key"] = "great_job"
                 responses["occasion"] = "Great Job"
                 askPoints(convo, responses);
+                convo.next();
             }
         },
         {
@@ -236,6 +237,7 @@ var askOccasion = function(convo, responses) {
                 responses["occasion_key"] = "birthday"
                 responses["occasion"] = "Birthday"
                 askPoints(convo, responses);
+                convo.next();
             }
         },
         {
@@ -244,6 +246,7 @@ var askOccasion = function(convo, responses) {
                 responses["occasion_key"] = "workiversary"
                 responses["occasion"] = "Workiversary"
                 askPoints(convo, responses);
+                convo.next();
             }
         },
         {
@@ -252,6 +255,7 @@ var askOccasion = function(convo, responses) {
                 responses["occasion_key"] = "congratulations"
                 responses["occasion"] = "Congratulations"
                 askPoints(convo, responses);
+                convo.next();
             }
         },
         {
@@ -260,6 +264,7 @@ var askOccasion = function(convo, responses) {
                 responses["occasion_key"] = "thank_you"
                 responses["occasion"] = "Thank You"
                 askPoints(convo, responses);
+                convo.next();
             }
         },
     ], {"key": "occasion"});
