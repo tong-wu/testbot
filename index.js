@@ -162,22 +162,67 @@ var askCancelConfirm = function(convo, responses) {
 }
 
 var askRecevier = function(convo, responses) {
-    convo.ask('Hi Tong! Who would you like to recognize today?', [
+    // convo.ask('Hi Tong! Who would you like to recognize today?', [
+    //     {
+    //         pattern: '@someone',
+    //         callback: function(response, convo) {
+    //             responses['receiver'] = response.text;
+    //             askOccasion(convo, responses);
+    //             convo.next();
+    //         }
+    //     },
+    //     {
+    //         default: true,
+    //         callback: function(response, convo) {
+    //             convo.repeat();
+    //         }
+    //     }
+    // ], {'key': 'recv'});
+    convo.ask({
+        attachments:[
+            {
+                title: 'Do you want to proceed?',
+                callback_id: '123',
+                attachment_type: 'default',
+                actions: [
+                    {
+                        "name":"yes",
+                        "text": "Yes",
+                        "value": "yes",
+                        "type": "button",
+                    },
+                    {
+                        "name":"no",
+                        "text": "No",
+                        "value": "no",
+                        "type": "button",
+                    }
+                ]
+            }
+        ]
+    },[
         {
-            pattern: '@someone',
-            callback: function(response, convo) {
-                responses['receiver'] = response.text;
-                askOccasion(convo, responses);
+            pattern: "yes",
+            callback: function(reply, convo) {
+                convo.say('FABULOUS!');
+                convo.next();
+                // do something awesome here.
+            }
+        },
+        {
+            pattern: "no",
+            callback: function(reply, convo) {
+                convo.say('Too bad');
                 convo.next();
             }
         },
         {
             default: true,
-            callback: function(response, convo) {
-                convo.repeat();
+            callback: function(reply, convo) {
+                // do nothing
             }
         }
-    ], {'key': 'recv'});
+    ]);
 }
 
 var askOccasion = function(convo, responses) {
