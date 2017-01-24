@@ -275,6 +275,7 @@ var askOccasion = function(convo, responses) {
                 title: 'Do you want to proceed?',
                 callback_id: '123',
                 attachment_type: 'default',
+                replace_original: false,
                 actions: [
                     {
                         "name":"yes",
