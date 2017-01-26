@@ -6,12 +6,7 @@ var PORT = process.env.port || 8080
 
 var VERIFY_TOKEN = process.env.SLACK_VERIFY_TOKEN
 
-var controller = Botkit.slackbot({
-  // reconnect to Slack RTM when connection goes bad
-  retry: Infinity,
-  debug: false,
-  interactive_replies: true
-});
+var controller = Botkit.slackbot();
 
 // Assume single team mode if we have a SLACK_TOKEN
 if (token) {
@@ -36,9 +31,8 @@ controller.setupWebserver(PORT, function (err, webserver) {
         console.error(err);
         process.exit(1);
     }
-
     controller.createWebhookEndpoints(webserver);
-})
+});
 
 controller.on('bot_channel_join', function (bot, message) {
   bot.reply(message, "I'm here!");
