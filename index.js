@@ -8,6 +8,14 @@ var VERIFY_TOKEN = process.env.SLACK_VERIFY_TOKEN
 
 var controller = Botkit.slackbot();
 
+controller.setupWebserver(PORT, function (err, webserver) {
+    if (err) {
+        console.error(err);
+        process.exit(1);
+    }
+    controller.createWebhookEndpoints(webserver);
+});
+
 // Assume single team mode if we have a SLACK_TOKEN
 if (token) {
   console.log('Starting in single-team mode');
@@ -25,14 +33,6 @@ if (token) {
   console.log('Starting in Beep Boop multi-team mode');
   require('beepboop-botkit').start(controller, { debug: false });
 }
-
-controller.setupWebserver(PORT, function (err, webserver) {
-    if (err) {
-        console.error(err);
-        process.exit(1);
-    }
-    controller.createWebhookEndpoints(webserver);
-});
 
 controller.on('bot_channel_join', function (bot, message) {
   bot.reply(message, "I'm here!");
